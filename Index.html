@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Estrategias de Liquidación Anticipada - Profuturo</title>
+    
+    <!-- Esta línea quita el mundito de tu imagen y pone tu propio icono -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 10px;
+            padding-bottom: 70px; 
+        }
+        @media (min-width: 600px) {
+            body { padding: 20px; padding-bottom: 20px; }
+        }
+        .logo-app {
+         width: 100%;          /* Permite que use el espacio disponible */
+        max-width: 280px;     /* El ancho máximo ideal para que luzca el rectángulo */
+        height: auto;         /* ¡Obliga a respetar la proporción original sin estirarse! */
+        object-fit: contain;  /* Asegura que no se deforme bajo ninguna condición */
+        display: inline-block;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 12px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+            border-radius: 6px;
+        }
+        @media (min-width: 600px) {
+            .container { padding: 20px; }
+        }
+        .header-title {
+            background-color: #2b78c5;
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 5px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            border-radius: 4px;
+        }
+        @media (min-width: 600px) {
+            .header-title { font-size: 22px; padding: 12px 10px; }
+        }
+        .top-info {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        @media (min-width: 768px) {
+            .top-info { grid-template-columns: 1fr 1fr; gap: 20px; }
+        }
+        .info-block {
+            display: grid;
+            grid-template-columns: 1fr;
+            row-gap: 4px;
+            align-items: center;
+        }
+        @media (min-width: 480px) {
+            .info-block {
+                grid-template-columns: auto 1fr;
+                column-gap: 10px;
+                row-gap: 8px;
+            }
+        }
+        .info-block label {
+            font-weight: bold;
+            color: #1a4a75;
+            font-size: 13px;
+        }
+        .info-block input {
+            padding: 8px 10px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #fff;
+            -webkit-appearance: none;
+        }
+        .info-block input.readonly-info {
+            background-color: #f1f3f5;
+            color: #495057;
+            border: 1px solid #ced4da;
+            font-weight: 500;
+        }
+        .promo-banner {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            text-align: center;
+            padding: 10px 8px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+        .ofertas-titulo {
+            background-color: #1a4a75;
+            color: white;
+            padding: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        @media (min-width: 600px) {
+            .ofertas-titulo { font-size: 15px; }
+        }
+        .ofertas-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        @media (min-width: 768px) {
+            .ofertas-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        .oferta-card {
+            border: 2px solid #2b78c5;
+            border-radius: 6px;
+            background: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .oferta-header {
+            background-color: #1a4a75;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+        }
+        .oferta-body {
+            padding: 12px;
+            font-size: 13px;
+            flex-grow: 1;
+        }
+        .oferta-explicacion {
+            background-color: #f7f9fa;
+            border-left: 4px solid #2b78c5;
+            padding: 8px;
+            margin-bottom: 12px;
+            font-style: italic;
+            color: #555;
+            line-height: 1.4;
+        }
+        .oferta-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #ddd;
+            padding: 6px 0;
+            gap: 10px;
+        }
+        .oferta-row span:last-child {
+            font-weight: bold;
+            text-align: right;
+        }
+        .oferta-total {
+            text-align: center;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .oferta-total-monto {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b58105;
+        }
+        .btn-aplicar-plan {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+        .acciones-contenedor {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            z-index: 9999;
+        }
+        @media (min-width: 600px) {
+            .acciones-contenedor {
+                position: static;
+                box-shadow: none;
+                padding: 0;
+                margin-bottom: 10px;
+                justify-content: flex-end;
+                background: transparent;
+            }
+        }
+        .btn-limpiar {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            flex: 1;
+            text-align: center;
+        }
+        .btn-imprimir {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            flex: 2;
+            text-align: center;
+        }
+        @media (min-width: 600px) {
+            .btn-limpiar, .btn-imprimir { flex: none; width: auto; }
+        }
+
+        .tabla-wrapper {
+            margin-bottom: 20px;
+        }
+        
+        .desktop-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .desktop-table th {
+            background-color: #1a4a75;
+            color: white;
+            padding: 10px 8px;
+            font-weight: bold;
+            text-align: right;
+            border: 1px solid #143756;
+        }
+        .desktop-table th:first-child, .desktop-table td:first-child { text-align: center; }
+        .desktop-table td {
+            padding: 8px 8px;
+            border: 1px solid #ddd;
+            text-align: right;
+        }
+        .desktop-table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .mobile-amortizacion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .mobile-row-card {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            overflow: hidden;
+        }
+        .mobile-row-header {
+            background-color: #eef4fa;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .mobile-row-header .header-main-info {
+            display: flex;
+            gap: 15px;
+        }
+        .mobile-row-header .toggle-icon {
+            color: #2b78c5;
+        }
+        .mobile-row-body {
+            padding: 10px;
+            background: #fafafa;
+            border-top: 1px dashed #ddd;
+            display: none; 
+            font-size: 13px;
+        }
+        .mobile-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .mobile-detail-item:last-child { border-bottom: none; }
+        
+        .input-abono {
+            width: 100%;
+            max-width: 110px;
+            text-align: right;
+            padding: 6px;
+            border: 1px solid #28a745;
+            border-radius: 4px;
+            background-color: #f4fff5;
+            font-size: 13px;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+        }
+
+        @media (max-width: 767px) {
+            .desktop-table { display: none; }
+            .mobile-amortizacion-list { display: flex; }
+        }
+        @media (min-width: 768px) {
+            .desktop-table { display: table; }
+            .mobile-amortizacion-list { display: none; }
+        }
+
+        .resumen-inferior {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 15px;
+            background: #f8f9fa;
+            padding: 12px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+        @media (min-width: 768px) {
+            .resumen-inferior { grid-template-columns: 1fr 1fr; gap: 40px; padding: 15px; }
+        }
+        .resumen-col div {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dotted #ccc;
+            gap: 10px;
+        }
+        .resumen-col div span:last-child {
+            font-weight: bold;
+            text-align: right;
+        }
+        .watermark-print { display: none; }
+
+        .app-footer {
+            text-align: center; 
+            margin-top: 25px; 
+            font-size: 11px; 
+            color: #777; 
+            border-top: 1px solid #e0e0e0; 
+            padding-top: 10px;
+            line-height: 1.4;
+        }
+
+        /* CONFIGURACIÓN EXCLUSIVA PARA IMPRESIÓN Y PDF */
+        @media print {
+            body { 
+                background-color: #fff; 
+                padding: 0; 
+                margin: 0; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+            .container { 
+                border: none; 
+                box-shadow: none; 
+                padding: 0; 
+                max-width: 100%; 
+                position: relative; 
+            }
+            
+            .watermark-print {
+                display: block !important;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-45deg);
+                font-family: 'Segoe UI', Arial, sans-serif;
+                font-size: 110px;
+                font-weight: 900;
+                color: rgba(26, 74, 117, 0.05); 
+                letter-spacing: 12px;
+                z-index: 1000; 
+                pointer-events: none; 
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            .acciones-contenedor, .btn-aplicar-plan, .toggle-icon { display: none !important; }
+            input, select { border: none !important; background: transparent !important; padding: 0 !important; appearance: none; -webkit-appearance: none; }
+            input:disabled { color: #333 !important; background: transparent !important; }
+            .desktop-table { display: table !important; width: 100% !important; }
+            .mobile-amortizacion-list { display: none !important; }
+            tr { page-break-inside: avoid; }
+            .tabla-wrapper { overflow: visible !important; border: none !important; }
+            .app-footer { border-top: 1px solid #ccc; color: #333; }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="logo-rect.png" alt="Logo Corporativo" class="logo-app">
+    </div>
+
+<div class="watermark-print">PROFUTURO</div>
+
+<div class="container">
+    <div class="header-title">CRÉDITO PERSONAL PENSIONADOS IMSS PROFUTURO</div>
+
+    <div class="top-info">
+        <div class="info-block">
+            <label>Nombre del ejecutivo:</label>
+            <input type="text" id="ejecutivo" value="Yoan Garrido" oninput="guardarDatosAsesor()">
+
+            <label>Teléfono del ejecutivo:</label>
+            <input type="text" id="telefono" value="663 127 8162" oninput="guardarDatosAsesor()">
+
+            <label>Tasa nominal anual (%):</label>
+            <input type="number" id="tasaAnual" value="31.89" step="0.01" oninput="cambioTasaOPlazo()">
+
+            <label>Tasa mensual (Info):</label>
+            <input type="text" id="tasaMensualInfo" class="readonly-info" readonly value="2.66%">
+        </div>
+        <div class="info-block">
+            <label>Monto a financiar ($):</label>
+            <input type="number" id="monto" value="100000" step="100" oninput="cambioMonto()">
+
+            <label>Mensualidad Base ($):</label>
+            <input type="number" id="mensualidadBase" value="3677.56" step="0.01" oninput="cambioMensualidad()">
+
+            <label>Plazo Original (Meses):</label>
+            <input type="number" id="plazoOriginal" value="60" oninput="cambioTasaOPlazo()">
+
+            <label>Comisión por apertura:</label>
+            <input type="text" value="-  (Sin comisión)" disabled class="readonly-info">
+        </div>
+    </div>
+
+    <div class="promo-banner">
+        "¡¡GRATIS POR PROMOCIÓN ESPECIAL!!" - Seguro de gastos funerarios, Seguro de deudor y Beca ProEmprende
+    </div>
+
+    <div class="ofertas-titulo">OPCIONES RECOMENDADAS DE LIQUIDACIÓN ANTICIPADA</div>
+    <div class="ofertas-grid" id="ofertas-container"></div>
+
+    <div class="acciones-contenedor">
+        <button class="btn-imprimir" onclick="window.print()">Guardar Oferta (PDF)</button>
+        <button class="btn-limpiar" onclick="limpiarAbonos()">Borrar abonos</button>
+    </div>
+
+    <div class="ofertas-titulo" style="margin-top:15px;">TABLA DE AMORTIZACIÓN EN TIEMPO REAL</div>
+    
+    <div class="tabla-wrapper">
+        <table class="desktop-table">
+            <thead>
+                <tr>
+                    <th style="text-align: center; width: 50px;">Mes</th>
+                    <th>Saldo Inicial</th>
+                    <th style="color: #0056b3;">Descuento Mensual</th>
+                    <th>Interés</th>
+                    <th>IVA Interés</th>
+                    <th style="background-color: #28a745; text-align: center; width: 120px;">Abono Extra</th>
+                    <th>Amortización Neto</th>
+                    <th>Saldo Final</th>
+                    <th>Pago Total</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-cuerpo-desktop"></tbody>
+        </table>
+
+        <div class="mobile-amortizacion-list" id="tabla-cuerpo-mobile"></div>
+    </div>
+
+    <div class="resumen-inferior">
+        <div class="resumen-col">
+            <div><span>Plazo real final:</span> <span id="resPlazoAjustado" style="color:#003366;">60 Meses</span></div>
+            <div><span>Meses recortados:</span> <span id="resTiempoAhorrado" style="color:#28a745;">0 Meses</span></div>
+            <div><span>Intereses Totales:</span> <span id="resInteresesTotales">$0.00</span></div>
+            <div><span>IVA Total de interés:</span> <span id="resIvaTotal">$0.00</span></div>
+            <div style="background: #eefdf0; border-top: 1px dashed #28a745; margin-top: 4px; padding: 4px 0;">
+                <span style="color:#155724; font-weight: bold;">¡Interés Ahorrado!:</span> 
+                <span id="resInteresAhorrado" style="color:#28a745; font-size: 15px;">$0.00</span>
+            </div>
+        </div>
+        <div class="resumen-col">
+            <div><span>Monto Histórico Pagado:</span> <span id="resMontoTotalPagar" style="color:#28a745;">$0.00</span></div>
+            <div><span>Monto Recibido en Cuenta:</span> <span id="resMontoOriginal">$100,000.00</span></div>
+            <div><span>% Interés Promedio Anual:</span> <span id="resInteresPromedio" style="color:#c00;">0.00%</span></div>
+            <div><span>% Interés Promedio Mensual:</span> <span id="resInteresPromedioMensual" style="font-weight:bold;">0.00%</span></div>
+            <div style="background: #eefdf0; border-top: 1px dashed #28a745; margin-top: 4px; padding: 4px 0;">
+                <span style="color:#155724; font-weight: bold;">¡IVA Ahorrado!:</span> 
+                <span id="resIvaAhorrado" style="color:#28a745; font-size: 15px;">$0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <p><strong>Simulador de Estrategias de Amortización Anticipada v4.0</strong></p>
+        <p>Desarrollado de forma independiente por <strong>Yoan Garrido</strong> © 2026. Todos los derechos reservados.</p>
+        <p style="font-size:10px; color:#aaa; font-style:italic;">Prohibida su reproducción parcial o total sin el consentimiento expreso del autor.</p>
+    </footer>
+</div>
+
+<script>
+    let abonosGuardados = {};
+    const IVA_FACTOR = 0.16;
+    let tarjetaSeleccionadaActiva = null; 
+    let bloqueado = false;
+
+    // NUEVA FUNCIÓN: Guarda los datos de forma local y privada para cada asesor
+    function guardarDatosAsesor() {
+        const nombreEjecutivo = document.getElementById('ejecutivo').value;
+        const telefonoEjecutivo = document.getElementById('telefono').value;
+        localStorage.setItem('asesor_nombre', nombreEjecutivo);
+        localStorage.setItem('asesor_telefono', telefonoEjecutivo);
+    }
+
+    // NUEVA FUNCIÓN: Carga los datos guardados del asesor al abrir la página
+    function cargarDatosAsesor() {
+        const nombreGuardado = localStorage.getItem('asesor_nombre');
+        const telefonoGuardado = localStorage.getItem('asesor_telefono');
+        if (nombreGuardado !== null) {
+            document.getElementById('ejecutivo').value = nombreGuardado;
+        }
+        if (telefonoGuardado !== null) {
+            document.getElementById('telefono').value = telefonoGuardado;
+        }
+    }
+
+    function limpiarAbonos() {
+        abonosGuardados = {};
+        tarjetaSeleccionadaActiva = null;
+        calcularTodo();
+    }
+
+    function toggleMobileRow(element) {
+        const body = element.nextElementSibling;
+        const icon = element.querySelector('.toggle-icon');
+        if (body.style.display === "block") {
+            body.style.display = "none";
+            icon.innerText = "▼";
+        } else {
+            body.style.display = "block";
+            icon.innerText = "▲";
+        }
+    }
+
+    function calcularPMT(tasaAnual, meses, monto) {
+        if (monto <= 0 || meses <= 0) return 0;
+        let r = ((tasaAnual / 100) / 12) * (1 + IVA_FACTOR);
+        if (r === 0) return monto / meses;
+        return (monto * r) / (1 - Math.pow(1 + r, -meses));
+    }
+
+    function calcularMontoDesdePMT(tasaAnual, meses, pmt) {
+        if (pmt <= 0 || meses <= 0) return 0;
+        let r = ((tasaAnual / 100) / 12) * (1 + IVA_FACTOR);
+        if (r === 0) return pmt * meses;
+        return (pmt * (1 - Math.pow(1 + r, -meses))) / r;
+    }
+
+    function cambioMonto() {
+        if (bloqueado) return;
+        bloqueado = true;
+        const monto = parseFloat(document.getElementById('monto').value) || 0;
+        const tasaAnual = parseFloat(document.getElementById('tasaAnual').value) || 0;
+        const plazo = parseInt(document.getElementById('plazoOriginal').value) || 60;
+        
+        const nuevaMensualidad = calcularPMT(tasaAnual, plazo, monto);
+        document.getElementById('mensualidadBase').value = nuevaMensualidad.toFixed(2);
+        bloqueado = false;
+        calcularTodo();
+    }
+
+    function cambioMensualidad() {
+        if (bloqueado) return;
+        bloqueado = true;
+        const mensualidad = parseFloat(document.getElementById('mensualidadBase').value) || 0;
+        const tasaAnual = parseFloat(document.getElementById('tasaAnual').value) || 0;
+        const plazo = parseInt(document.getElementById('plazoOriginal').value) || 60;
+        
+        const nuevoMonto = calcularMontoDesdePMT(tasaAnual, plazo, mensualidad);
+        document.getElementById('monto').value = nuevoMonto.toFixed(2);
+        bloqueado = false;
+        calcularTodo();
+    }
+
+    function cambioTasaOPlazo() {
+        cambioMonto();
+    }
+
+    function calcularAbonoFijoObjetivoPuro(monto, mensualidad, tasaAnual, mesesMeta, estrategiaId) {
+        let minAbono = 0;
+        let maxAbono = monto;
+        let abonoResultante = 0;
+        let tasaMensual = (tasaAnual / 100) / 12;
+
+        for (let i = 0; i < 100; i++) {
+            abonoResultante = (minAbono + maxAbono) / 2;
+            let saldo = monto;
+
+            for (let m = 1; m <= mesesMeta; m++) {
+                if (saldo <= 0) break;
+                let interes = saldo * tasaMensual;
+                let iva = interes * IVA_FACTOR;
+                
+                let aplicaAbono = false;
+                if (estrategiaId === 'mes12' && m <= 10) aplicaAbono = true; 
+                if (estrategiaId === 'mes18' && m % 2 === 0) aplicaAbono = true;
+                if (estrategiaId === 'mes24' && m % 3 === 0) aplicaAbono = true;
+
+                let pago = mensualidad + (aplicaAbono ? abonoResultante : 0);
+                
+                if (pago >= (saldo + interes + iva)) {
+                    saldo = 0;
+                } else {
+                    saldo -= (pago - (interes + iva));
+                }
+            }
+
+            if (saldo <= 0.001) maxAbono = abonoResultante;
+            else minAbono = abonoResultante;
+        }
+        return abonoResultante;
+    }
+
+    function aplicarPlanEstrategico(estrategiaId, paramMeses, montoAbono) {
+        abonosGuardados = {};
+        tarjetaSeleccionadaActiva = estrategiaId;
+        const plazoMax = parseInt(document.getElementById('plazoOriginal').value) || 60;
+        
+        for (let m = 1; m <= plazoMax; m++) {
+            if (m <= paramMeses) {
+                if (estrategiaId === 'mes12' && m <= 10) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
+                else if (estrategiaId === 'mes18' && m % 2 === 0) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
+                else if (estrategiaId === 'mes24' && m % 3 === 0) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
+            }
+        }
+        calcularTodo();
+    }
+
+    function calcularTodo() {
+        const montoInicial = parseFloat(document.getElementById('monto').value) || 0;
+        const mensualidadBase = parseFloat(document.getElementById('mensualidadBase').value) || 0;
+        const tasaAnualPorcentaje = parseFloat(document.getElementById('tasaAnual').value) || 0;
+        const plazoMaximo = parseInt(document.getElementById('plazoOriginal').value) || 60;
+        
+        const tasaMensualCalculada = tasaAnualPorcentaje / 12;
+        document.getElementById('tasaMensualInfo').value = tasaMensualCalculada.toFixed(4) + '%';
+        
+        let tasaMensual = (tasaAnualPorcentaje / 100) / 12;
+        
+        let desktopHtml = '';
+        let mobileHtml = '';
+        
+        let saldoInsolutoBase = montoInicial;
+        let totalInteresBase = 0;
+        let totalIvaBase = 0;
+        for (let m = 1; m <= plazoMaximo; m++) {
+            if (saldoInsolutoBase <= 0) break;
+            let iBase = saldoInsolutoBase * tasaMensual;
+            let ivBase = iBase * IVA_FACTOR;
+            let pBase = mensualidadBase;
+            if (pBase > (saldoInsolutoBase + iBase + ivBase)) pBase = saldoInsolutoBase + iBase + ivBase;
+            totalInteresBase += iBase;
+            totalIvaBase += ivBase;
+            saldoInsolutoBase -= (pBase - (iBase + ivBase));
+        }
+
+        let saldoInsoluto = montoInicial;
+        let totalInteresAcumulado = 0;
+        let totalIvaAcumulado = 0;
+        let totalPagadoAcumulado = 0;
+        let mesesConSaldoEfectivo = 0;
+        let yaTerminoDePagar = false;
+
+        for (let mes = 1; mes <= plazoMaximo; mes++) {
+            if (saldoInsoluto <= 0.01) {
+                desktopHtml += `<tr style="color: #ccc;">
+                    <td style="text-align:center; background:#f9f9f9;">${mes}</td>
+                    <td>$0.00</td><td>$0.00</td><td>$0.00</td><td>$0.00</td>
+                    <td><input type="number" class="input-abono" disabled value=""></td>
+                    <td>$0.00</td><td>$0.00</td><td>$0.00</td>
+                </tr>`;
+                continue;
+            }
+
+            mesesConSaldoEfectivo++;
+
+            let saldoInicialMes = saldoInsoluto;
+            let interesMes = saldoInicialMes * tasaMensual;
+            let ivaMes = interesMes * IVA_FACTOR;
+            
+            let abonoExtra = abonosGuardados[mes] || 0;
+            let pagoTotalEsteMes = mensualidadBase + abonoExtra;
+
+            if (pagoTotalEsteMes >= (saldoInicialMes + interesMes + ivaMes)) {
+                pagoTotalEsteMes = saldoInicialMes + interesMes + ivaMes;
+                abonoExtra = Math.max(0, pagoTotalEsteMes - mensualidadBase);
+                yaTerminoDePagar = true;
+            }
+
+            let amortizacionCapital = pagoTotalEsteMes - (interesMes + ivaMes);
+            let saldoFinalMes = saldoInicialMes - amortizacionCapital;
+            
+            if (saldoFinalMes < 0.05) {
+                saldoFinalMes = 0;
+            }
+
+            let sInicialTxt = `$${saldoInicialMes.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            let mBaseTxt = `$${mensualidadBase.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            let interesTxt = `$${interesMes.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            let ivaTxt = `$${ivaMes.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            let amortTxt = `$${amortizacionCapital.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            let sFinalTxt = `$${saldoFinalMes.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            let pTotalTxt = `$${pagoTotalEsteMes.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            desktopHtml += `<tr>
+                <td style="text-align:center; font-weight:bold; background:#eef4fa;">${mes}</td>
+                <td>${sInicialTxt}</td>
+                <td style="color: #0056b3;">${mBaseTxt}</td>
+                <td>${interesTxt}</td>
+                <td>${ivaTxt}</td>
+                <td><input type="number" class="input-abono" data-mes="${mes}" value="${abonosGuardados[mes] || ''}" placeholder="-$" onchange="guardarAbono(this)"></td>
+                <td>${amortTxt}</td>
+                <td style="font-weight:600;">${sFinalTxt}</td>
+                <td style="font-weight:bold; color:#1a4a75; background:#f4f7f9;">${pTotalTxt}</td>
+            </tr>`;
+
+            mobileHtml += `
+                <div class="mobile-row-card">
+                    <div class="mobile-row-header" onclick="toggleMobileRow(this)">
+                        <div class="header-main-info">
+                            <span>Mes ${mes}</span>
+                            <span style="color:#28a745;">Fin: ${sFinalTxt}</span>
+                        </div>
+                        <div>
+                            <span style="font-size:11px; color:#666; margin-right:5px;">Detalles</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                    </div>
+                    <div class="mobile-row-body">
+                        <div class="mobile-detail-item"><span>Saldo Inicial:</span> <span>${sInicialTxt}</span></div>
+                        <div class="mobile-detail-item"><span style="color:#0056b3;">Descuento IMSS:</span> <span>${mBaseTxt}</span></div>
+                        <div class="mobile-detail-item"><span>Interés ordinario:</span> <span>${interesTxt}</span></div>
+                        <div class="mobile-detail-item"><span>IVA Interés:</span> <span>${ivaMes.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</span></div>
+                        <div class="mobile-detail-item" style="background:#f4fff5; padding:4px 0; align-items:center;">
+                            <span style="color:#28a745; font-weight:bold;">Abono Extra:</span>
+                            <input type="number" class="input-abono" data-mes="${mes}" value="${abonosGuardados[mes] || ''}" placeholder="-$" onchange="guardarAbono(this)">
+                        </div>
+                        <div class="mobile-detail-item"><span>Amortización Neto:</span> <span>${amortTxt}</span></div>
+                        <div class="mobile-detail-item" style="font-weight:bold; color:#1a4a75;"><span>Pago Total del Mes:</span> <span>${pTotalTxt}</span></div>
+                    </div>
+                </div>
+            `;
+
+            totalInteresAcumulado += interesMes;
+            totalIvaAcumulado += ivaMes;
+            totalPagadoAcumulado += pagoTotalEsteMes;
+            saldoInsoluto = saldoFinalMes;
+        }
+
+        document.getElementById('tabla-cuerpo-desktop').innerHTML = desktopHtml;
+        document.getElementById('tabla-cuerpo-mobile').innerHTML = mobileHtml;
+
+        document.getElementById('resPlazoAjustado').innerText = mesesConSaldoEfectivo + " Meses";
+        document.getElementById('resTiempoAhorrado').innerText = Math.max(0, plazoMaximo - mesesConSaldoEfectivo) + " Meses";
+        document.getElementById('resInteresesTotales').innerText = `$${totalInteresAcumulado.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        document.getElementById('resIvaTotal').innerText = `$${totalIvaAcumulado.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        document.getElementById('resMontoTotalPagar').innerText = `$${totalPagadoAcumulado.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        document.getElementById('resMontoOriginal').innerText = `$${montoInicial.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        
+        let ahorroInteresReal = Math.max(0, totalInteresBase - totalInteresAcumulado);
+        let ahorroIvaReal = Math.max(0, totalIvaBase - totalIvaAcumulado);
+
+        document.getElementById('resInteresAhorrado').innerText = `$${ahorroInteresReal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        document.getElementById('resIvaAhorrado').innerText = `$${ahorroIvaReal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        
+        let promedioAnualizadoGlobal = (montoInicial > 0) ? (totalInteresAcumulado / montoInicial) * 100 : 0;
+        let totalAnosReales = mesesConSaldoEfectivo / 12;
+        let promedioAnualAjustado = (totalAnosReales > 0) ? (promedioAnualizadoGlobal / totalAnosReales) : 0;
+        document.getElementById('resInteresPromedio').innerText = `${promedioAnualAjustado.toFixed(2)}%`;
+
+        let promedioMensualGlobal = (mesesConSaldoEfectivo > 0) ? (promedioAnualizadoGlobal / mesesConSaldoEfectivo) : 0;
+        document.getElementById('resInteresPromedioMensual').innerText = `${promedioMensualGlobal.toFixed(2)}%`;
+        
+        construirTarjetasComerciales(montoInicial, mensualidadBase, tasaAnualPorcentaje);
+    }
+
+    function guardarAbono(input) {
+        const mes = input.getAttribute('data-mes');
+        const valor = parseFloat(input.value) || 0;
+        if (valor <= 0) delete abonosGuardados[mes];
+        else abonosGuardados[mes] = valor;
+        tarjetaSeleccionadaActiva = null; 
+        calcularTodo();
+    }
+
+    function construirTarjetasComerciales(monto, mensualidad, tasaAnual) {
+        if(monto <= 0 || mensualidad <= 0 || tasaAnual <= 0) return;
+
+        let tm = (tasaAnual / 100) / 12;
+
+        const estrategias = [
+            {
+                id: 'mes12',
+                titulo: "PLAN: LIQUIDAR A 12 MESES",
+                explicacion: `Esquema de salida rápida acelerada: Aporte un extra continuo de los meses 1 al 10 para extinguir la deuda completa en un año exacto.`,
+                mesesMeta: 12,
+                montoAbono: calcularAbonoFijoObjetivoPuro(monto, mensualidad, tasaAnual, 12, 'mes12'),
+                txtAbono: "", interes: 0, iva: 0, total: 0, promedio: 0, promedioMensual: 0
+            },
+            {
+                id: 'mes18',
+                titulo: "PLAN: LIQUIDAR A 18 MESES",
+                explicacion: `Estrategia intermitente: Pague su descuento normal un mes y al siguiente mes aporte un extra para salir en 1.5 años.`,
+                mesesMeta: 18,
+                montoAbono: calcularAbonoFijoObjetivoPuro(monto, mensualidad, tasaAnual, 18, 'mes18'),
+                txtAbono: "", interes: 0, iva: 0, total: 0, promedio: 0, promedioMensual: 0
+            },
+            {
+                id: 'mes24',
+                titulo: "PLAN: LIQUIDAR A 24 MESES",
+                explicacion: `Esquema trimestral: Realice una inyección programada a capital cada 3 meses para extinguir el crédito en 2 años exactos.`,
+                mesesMeta: 24,
+                montoAbono: calcularAbonoFijoObjeturoPuro = calcularAbonoFijoObjetivoPuro(monto, mensualidad, tasaAnual, 24, 'mes24'),
+                txtAbono: "", interes: 0, iva: 0, total: 0, promedio: 0, promedioMensual: 0
+            }
+        ];
+
+        let html = '';
+        estrategias.forEach((est, idx) => {
+            let saldo = monto;
+            let mesesRealesDeVida = 0;
+            
+            for(let m = 1; m <= est.mesesMeta; m++) {
+                if (saldo <= 0.01) break;
+                mesesRealesDeVida++;
+                let j = saldo * tm; 
+                let v = j * IVA_FACTOR;
+                
+                let aplica = false;
+                if (idx === 0 && m <= 10) aplica = true; 
+                if (idx === 1) aplica = (m % 2 === 0);
+                if (idx === 2) aplica = (m % 3 === 0);
+                
+                let p = mensualidad + (aplica ? est.montoAbono : 0);
+                if (p >= (saldo + j + v)) p = saldo + j + v;
+                
+                est.interes += j; 
+                est.iva += v; 
+                est.total += p;
+                saldo -= (p - (j + v));
+            }
+            
+            let factorAnos = mesesRealesDeVida / 12;
+            let porcentajeTotalAcumulado = (monto > 0) ? (est.interes / monto) * 100 : 0;
+            
+            est.promedio = (factorAnos > 0) ? (porcentajeTotalAcumulado / factorAnos) : 0; 
+            est.promedioMensual = (mesesRealesDeVida > 0) ? (porcentajeTotalAcumulado / mesesRealesDeVida) : 0;
+            
+            if(idx===0) est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} (Mes 1 al 10)`;
+            if(idx===1) est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} meses pares`;
+            if(idx===2) est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} c/3 meses`;
+
+            html += `
+                <div class="oferta-card" style="${tarjetaSeleccionadaActiva === est.id ? 'border: 2px solid #28a745; box-shadow: 0 0 10px rgba(40,167,69,0.3);' : ''}">
+                    <div class="oferta-header" style="${tarjetaSeleccionadaActiva === est.id ? 'background-color: #28a745;' : ''}">${est.titulo}</div>
+                    <div class="oferta-body">
+                        <div class="oferta-explicacion">"${est.explicacion}"</div>
+                        <div class="oferta-row" style="background:#eef4fa; padding:5px; font-weight:bold; border-radius:4px;">
+                            <span>Abonar extra:</span>
+                            <span style="color:#0056b3;">${est.txtAbono}</span>
+                        </div>
+                        <div class="oferta-row"><span>Plazo de salida:</span> <span style="color:#28a745;">${mesesRealesDeVida} Meses</span></div>
+                        <div class="oferta-row"><span>Interés ordinario:</span> <span>$${est.interes.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2})}</span></div>
+                        <div class="oferta-row"><span>IVA de interés:</span> <span>$${est.iva.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2})}</span></div>
+                        <div class="oferta-row"><span>Interés Promedio Anual:</span> <span style="color:#1a4a75; font-weight:bold;">${est.promedio.toFixed(2)}%</span></div>
+                        <div class="oferta-row" style="border-bottom: 1px dashed #bbb; padding-bottom: 8px;"><span>Interés Promedio Mensual:</span> <span>${est.promedioMensual.toFixed(2)}%</span></div>
+                        
+                        <div class="oferta-total">
+                            <span style="font-size:11px; color:#666; display:block; font-weight:bold;">Monto Total Histórico</span>
+                            <span class="oferta-total-monto">$${est.total.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                        </div>
+                    </div>
+                    <button class="btn-aplicar-plan" style="${tarjetaSeleccionadaActiva === est.id ? 'background-color: #1a4a75;' : ''}" onclick="aplicarPlanEstrategico('${est.id}', ${est.mesesMeta}, ${est.montoAbono})">
+                        ${tarjetaSeleccionadaActiva === est.id ? '✓ Plan Activo' : 'Simular este plan'}
+                    </button>
+                </div>
+            `;
+        });
+        document.getElementById('ofertas-container').innerHTML = html;
+    }
+
+    console.log(
+        "%c¡Sistema Desarrollado por Yoan Garrido!\n%cAsesor Certificado Especialista\nContacto Ejecutivo: 663 127 8162\n© 2026 Todos los derechos de código e ingeniería matemática reservados.", 
+        "color: #1a4a75; font-size: 18px; font-weight: bold; font-family: sans-serif;",
+        "color: #28a745; font-size: 13px; font-weight: 500;"
+    );
+
+    window.onload = function() {
+        cargarDatosAsesor(); // Recupera de la memoria del teléfono los datos de este asesor específico
+        calcularTodo();
+    };
+</script>
+
+</body>
+</html>
