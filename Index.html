@@ -20,10 +20,10 @@
             body { padding: 20px; padding-bottom: 20px; }
         }
         .logo-app {
-         width: 100%;          /* Permite que use el espacio disponible */
-        max-width: 280px;     /* El ancho máximo ideal para que luzca el rectángulo */
-        height: auto;         /* ¡Obliga a respetar la proporción original sin estirarse! */
-        object-fit: contain;  /* Asegura que no se deforme bajo ninguna condición */
+         width: 100%;          
+        max-width: 280px;     
+        height: auto;         
+        object-fit: contain;  
         display: inline-block;
         }
         .container {
@@ -110,6 +110,14 @@
             margin-bottom: 20px;
             border-radius: 4px;
             line-height: 1.4;
+        }
+        .legal-notice-banner {
+            border-left: 5px solid #2b78c5;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
         .ofertas-titulo {
             background-color: #1a4a75;
@@ -379,7 +387,7 @@
             line-height: 1.4;
         }
 
-        /* CONFIGURACIÓN EXCLUSIVA PARA IMPRESIÓN Y PDF */
+        /* CONFIGURACIÓN EXCLUSIVA PARA IMPRESIÓN Y PDF, no modificar ya funciona bien */
         @media print {
             body { 
                 background-color: #fff; 
@@ -443,10 +451,11 @@
             <input type="text" id="telefono" value="663 127 8162" oninput="guardarDatosAsesor()">
 
             <label>Tasa nominal anual (%):</label>
-            <select id="tasaAnual" onchange="cambioTasaOPlazo()">
+            <select id="tasaAnual" onchange="aplicarPlazoPorTasa()">
                 <option value="31.89">31.89%</option>
                 <option value="29.5154">29.5154%</option>
                 <option value="29.0842">29.0842%</option>
+                <option value="29.20">29.20%</option>
             </select>
 
             <label>Tasa mensual (Info):</label>
@@ -460,7 +469,7 @@
             <input type="number" id="mensualidadBase" value="3677.56" step="0.01" oninput="cambioMensualidad()">
 
             <label>Plazo Original (Meses):</label>
-            <input type="number" id="plazoOriginal" value="60" oninput="cambioTasaOPlazo()">
+            <input type="number" id="plazoOriginal" value="60" class="readonly-info" readonly>
 
             <label>Comisión por apertura:</label>
             <input type="text" value="-  (Sin comisión)" disabled class="readonly-info">
@@ -468,7 +477,17 @@
     </div>
 
     <div class="promo-banner">
-        "¡¡GRATIS POR PROMOCIÓN ESPECIAL!!" - Seguro de gastos funerarios, Seguro de deudor y Beca ProEmprende
+        "¡¡GRATIS POR PROMOCIÓN ESPECIAL!!" - Seguro de deudor y Asistencia Funeraria Integral vía GNP
+    </div>
+
+    <div class="legal-notice-banner">
+        <p style="margin-top: 0; font-size: 13px;">⚠️ <strong>Aviso de Transparencia:</strong> Esto constituye una <strong>simulación personalizada</strong> de carácter informativo. Las condiciones definitivas serán exclusivamente las estipuladas en tu <strong>Contrato de Apertura</strong> y <strong>Carta Libranza</strong> comerciales. El usuario queda obligado a cotejar la información plasmada contra los documentos finales enviados a su correo electrónico institucional.</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; font-size: 11.5px; border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 10px; color: #555;">
+            <div><strong>• Cláusula 5ª (Tasa Ordinaria):</strong> Interés fijo anual sobre saldos insolutos, calculado bajo base comercial de 360 días.</div>
+            <div><strong>• Cláusula 8ª (Pagos Anticipados):</strong> Derecho a abonos a capital <u>sin penalización alguna</u> (monto igual o mayor al descuento ordinario).</div>
+            <div><strong>• Cláusula 11ª (Seguro de Vida):</strong> Cobertura colectiva de saldos insolutos sin costo para el cliente, respaldada por GNP.</div>
+        </div>
     </div>
 
     <div class="ofertas-titulo">OPCIONES RECOMENDADAS DE LIQUIDACIÓN ANTICIPADA</div>
@@ -526,8 +545,8 @@
     </div>
 
     <footer class="app-footer">
-        <p><strong>Simulador de Estrategias de Amortización Anticipada v4.0</strong></p>
-        <p>Desarrollado de forma independiente por <strong>Yoan Garrido</strong> © 2026. Todos los derechos reservados.</p>
+        <p><strong>Simulador de Estrategias de Amortización Anticipada v4.3</strong></p>
+        <p>Desarrollado de forma independiente por <strong>Yoan Garrido</strong> © 2026. Todos los derechos de código e ingeniería matemática reservados.</p>
         <p style="font-size:10px; color:#aaa; font-style:italic;">Prohibida su reproducción parcial o total sin el consentimiento expreso del autor.</p>
     </footer>
 </div>
@@ -538,7 +557,28 @@
     let tarjetaSeleccionadaActiva = null; 
     let bloqueado = false;
 
-    // NUEVA FUNCIÓN: Guarda los datos de forma local y privada para cada asesor
+    // ==========================================================
+    // DICCIONARIO DE CONFIGURACIÓN DE TASAS Y PLAZOS... no olvidarme de modificar en el mismo orden el select id
+    // ==========================================================
+    const configuracionTasas = {
+        "31.89": 60,
+        "29.5154": 54,
+        "29.0842": 48,
+        "29.20": 48
+    };
+
+    function aplicarPlazoPorTasa() {
+        const tasaSeleccionada = document.getElementById('tasaAnual').value;
+        const plazoInput = document.getElementById('plazoOriginal');
+
+        if (configuracionTasas[tasaSeleccionada]) {
+            plazoInput.value = configuracionTasas[tasaSeleccionada];
+        }
+
+        cambioTasaOPlazo();
+    }
+    // ==========================================================
+
     function guardarDatosAsesor() {
         const nombreEjecutivo = document.getElementById('ejecutivo').value;
         const telefonoEjecutivo = document.getElementById('telefono').value;
@@ -546,7 +586,6 @@
         localStorage.setItem('asesor_telefono', telefonoEjecutivo);
     }
 
-    // NUEVA FUNCIÓN: Carga los datos guardados del asesor al abrir la página
     function cargarDatosAsesor() {
         const nombreGuardado = localStorage.getItem('asesor_nombre');
         const telefonoGuardado = localStorage.getItem('asesor_telefono');
@@ -637,8 +676,8 @@
                 
                 let aplicaAbono = false;
                 if (estrategiaId === 'mes12' && m <= 10) aplicaAbono = true; 
-                if (estrategiaId === 'mes18' && m % 2 === 0) aplicaAbono = true;
-                if (estrategiaId === 'mes24' && m % 3 === 0) aplicaAbono = true;
+                if (estrategiaId === 'mes18') aplicaAbono = true; // Mensual completo
+                if (estrategiaId === 'mes24' && m % 2 === 0) aplicaAbono = true; // Bimestral completo
 
                 let pago = mensualidad + (aplicaAbono ? abonoResultante : 0);
                 
@@ -661,11 +700,9 @@
         const plazoMax = parseInt(document.getElementById('plazoOriginal').value) || 60;
         
         for (let m = 1; m <= plazoMax; m++) {
-            if (m <= paramMeses) {
-                if (estrategiaId === 'mes12' && m <= 10) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
-                else if (estrategiaId === 'mes18' && m % 2 === 0) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
-                else if (estrategiaId === 'mes24' && m % 3 === 0) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
-            }
+            if (estrategiaId === 'mes12' && m <= 10) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
+            else if (estrategiaId === 'mes18' && m <= paramMeses) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
+            else if (estrategiaId === 'mes24' && m <= paramMeses && m % 2 === 0) abonosGuardados[m] = parseFloat(montoAbono.toFixed(2));
         }
         calcularTodo();
     }
@@ -836,15 +873,15 @@
             {
                 id: 'mes12',
                 titulo: "PLAN: LIQUIDAR A 12 MESES",
-                explicacion: `Esquema de salida rápida acelerada: Aporte un extra continuo de los meses 1 al 10 para extinguir la deuda completa en un año exacto.`,
+                explicacion: `Esquema de salida rápida acelerada: Aporte un extra continuo mensual para extinguir la deuda completa en 1 año exacto.`,
                 mesesMeta: 12,
                 montoAbono: calcularAbonoFijoObjetivoPuro(monto, mensualidad, tasaAnual, 12, 'mes12'),
                 txtAbono: "", interes: 0, iva: 0, total: 0, promedio: 0, promedioMensual: 0
             },
             {
                 id: 'mes18',
-                titulo: "PLAN: LIQUIDAR A 18 MESES",
-                explicacion: `Estrategia intermitente: Pague su descuento normal un mes y al siguiente mes aporte un extra para salir en 1.5 años.`,
+                titulo: "PLAN: ESTRATEGIA 18 MESES",
+                explicacion: `Esquema mensual constante: Aporte un extra fijo todos los meses para extinguir la deuda por completo en 18 meses exactos.`,
                 mesesMeta: 18,
                 montoAbono: calcularAbonoFijoObjetivoPuro(monto, mensualidad, tasaAnual, 18, 'mes18'),
                 txtAbono: "", interes: 0, iva: 0, total: 0, promedio: 0, promedioMensual: 0
@@ -852,9 +889,9 @@
             {
                 id: 'mes24',
                 titulo: "PLAN: LIQUIDAR A 24 MESES",
-                explicacion: `Esquema trimestral: Realice una inyección programada a capital cada 3 meses para extinguir el crédito en 2 años exactos.`,
+                explicacion: `Esquema bimestral cómodo: Realice una inyección programada a capital cada 2 meses (más frecuente, menor cantidad) para salir en 2 años.`,
                 mesesMeta: 24,
-                montoAbono: calcularAbonoFijoObjeturoPuro = calcularAbonoFijoObjetivoPuro(monto, mensualidad, tasaAnual, 24, 'mes24'),
+                montoAbono: calcularAbonoFijoObjetivoPuro(monto, mensualidad, tasaAnual, 24, 'mes24'),
                 txtAbono: "", interes: 0, iva: 0, total: 0, promedio: 0, promedioMensual: 0
             }
         ];
@@ -871,9 +908,9 @@
                 let v = j * IVA_FACTOR;
                 
                 let aplica = false;
-                if (idx === 0 && m <= 10) aplica = true; 
-                if (idx === 1) aplica = (m % 2 === 0);
-                if (idx === 2) aplica = (m % 3 === 0);
+                if (est.id === 'mes12' && m <= 10) aplica = true; 
+                if (est.id === 'mes18') aplica = true; 
+                if (est.id === 'mes24' && m % 2 === 0) aplica = true; 
                 
                 let p = mensualidad + (aplica ? est.montoAbono : 0);
                 if (p >= (saldo + j + v)) p = saldo + j + v;
@@ -890,9 +927,9 @@
             est.promedio = (factorAnos > 0) ? (porcentajeTotalAcumulado / factorAnos) : 0; 
             est.promedioMensual = (mesesRealesDeVida > 0) ? (porcentajeTotalAcumulado / mesesRealesDeVida) : 0;
             
-            if(idx===0) est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} (Mes 1 al 10)`;
-            if(idx===1) est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} meses pares`;
-            if(idx===2) est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} c/3 meses`;
+            if(est.id === 'mes12') est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} Mensual (Mes 1 al 10)`;
+            if(est.id === 'mes18') est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} Mensual`;
+            if(est.id === 'mes24') est.txtAbono = `$${est.montoAbono.toLocaleString('en-US',{maximumFractionDigits:2})} c/2 meses`;
 
             html += `
                 <div class="oferta-card" style="${tarjetaSeleccionadaActiva === est.id ? 'border: 2px solid #28a745; box-shadow: 0 0 10px rgba(40,167,69,0.3);' : ''}">
@@ -914,7 +951,7 @@
                             <span class="oferta-total-monto">$${est.total.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2})}</span>
                         </div>
                     </div>
-                    <button class="btn-aplicar-plan" style="${tarjetaSeleccionadaActiva === est.id ? 'background-color: #1a4a75;' : ''}" onclick="aplicarPlanEstrategico('${est.id}', ${est.mesesMeta}, ${est.montoAbono})">
+                    <button class="btn-aplicar-plan" style="${tarjetaSeleccionadaActiva === est.id ? 'background-color: #1a4a75;' : ''}" onclick="aplicarPlanEstrategico('${est.id}', ${mesesRealesDeVida}, ${est.montoAbono})">
                         ${tarjetaSeleccionadaActiva === est.id ? '✓ Plan Activo' : 'Simular este plan'}
                     </button>
                 </div>
@@ -930,8 +967,9 @@
     );
 
     window.onload = function() {
-        cargarDatosAsesor(); // Recupera de la memoria del teléfono los datos de este asesor específico
-        calcularTodo();
+        cargarDatosAsesor(); 
+        // Ejecutamos la validación... revisar el respaldo que no se subio a github por si falla
+        aplicarPlazoPorTasa(); 
     };
 </script>
 
