@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Estrategias de Liquidación Anticipada - Profuturo</title>
     
-    <!-- Esta línea quita el mundito de tu imagen y pone tu propio icono -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     <style>
@@ -84,7 +83,7 @@
             color: #1a4a75;
             font-size: 13px;
         }
-        .info-block input {
+        .info-block input, .info-block select {
             padding: 8px 10px;
             border: 1px solid #aaa;
             border-radius: 4px;
@@ -444,7 +443,11 @@
             <input type="text" id="telefono" value="663 127 8162" oninput="guardarDatosAsesor()">
 
             <label>Tasa nominal anual (%):</label>
-            <input type="number" id="tasaAnual" value="31.89" step="0.01" oninput="cambioTasaOPlazo()">
+            <select id="tasaAnual" onchange="cambioTasaOPlazo()">
+                <option value="31.89">31.89%</option>
+                <option value="29.5154">29.5154%</option>
+                <option value="29.0842">29.0842%</option>
+            </select>
 
             <label>Tasa mensual (Info):</label>
             <input type="text" id="tasaMensualInfo" class="readonly-info" readonly value="2.66%">
