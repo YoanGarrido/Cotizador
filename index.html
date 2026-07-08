@@ -499,6 +499,7 @@
     <div class="ofertas-grid" id="ofertas-container"></div>
 
     <div class="acciones-contenedor">
+        <button class="btn-imprimir" style="background-color: #25D366; color: white;" onclick="enviarWhatsApp()">Compartir por WhatsApp</button>
         <button class="btn-imprimir" onclick="window.print()">Guardar Oferta (PDF)</button>
         <button class="btn-limpiar" onclick="limpiarAbonos()">Borrar abonos</button>
     </div>
@@ -963,6 +964,34 @@
             `;
         });
         document.getElementById('ofertas-container').innerHTML = html;
+        
+    }
+    function enviarWhatsApp() {
+        const monto = document.getElementById('monto').value;
+        const plazoReal = document.getElementById('resPlazoAjustado').innerText;
+        const mesesAhorrados = document.getElementById('resTiempoAhorrado').innerText;
+        const interesAhorrado = document.getElementById('resInteresAhorrado').innerText;
+        const mensualidadBase = document.getElementById('mensualidadBase').value;
+        const ejecutivo = document.getElementById('ejecutivo').value;
+        const telefono = document.getElementById('telefono').value;
+
+        let planTxt = "Personalizado";
+        if (tarjetaSeleccionadaActiva === 'mes12') planTxt = "Estrategia 12 Meses";
+        if (tarjetaSeleccionadaActiva === 'mes18') planTxt = "Estrategia 18 Meses";
+        if (tarjetaSeleccionadaActiva === 'mes24') planTxt = "Estrategia 24 Meses";
+
+        let mensaje = `*CRÉDITO PERSONAL PENSIONADOS IMSS*%0A%0A`;
+        mensaje += `Hola, le comparto la propuesta del plan de liquidación anticipada diseñado para usted.%0A%0A`;
+        mensaje += `• *Monto Solicitado:* $${parseFloat(monto).toLocaleString('en-US')}%0A`;
+        mensaje += `• *Descuento Mensual Base:* $${parseFloat(mensualidadBase).toLocaleString('en-US')}%0A`;
+        mensaje += `• *Plan Aplicado:* ${planTxt}%0A`;
+        mensaje += `• *Plazo Reducido Real:* ${plazoReal}%0A`;
+        mensaje += `• *Tiempo Recortado:* ${mesesAhorrados}%0A`;
+        mensaje += `• *¡Interés Neto Ahorrado!:* ${interesAhorrado}%0A%0A`;
+        mensaje += `_Nota: Recuerde que sus aportaciones a capital son sobre saldos insolutos y sin penalización._%0A%0A`;
+        mensaje += `Atendido por su asesor: *${ejecutivo}* (Tel: ${telefono})`;
+
+        window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
     }
 
     console.log(
