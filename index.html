@@ -975,27 +975,34 @@
     const ejecutivo = document.getElementById('ejecutivo').value;
     const telefono = document.getElementById('telefono').value;
 
-    // Si tu crédito siempre inicia a 60 meses
-    const plazoOriginal = 60;
+   
+    const plazoOriginal = getElementById('plazoOriginal').value;
 
-    let mensaje = `🟢 *¡SU PROPUESTA DE AHORRO ESTÁ LISTA!*%0A%0A`;
+       // Fecha de la simulación
+    const fecha = new Date().toLocaleDateString('es-MX');
 
-    mensaje += `Revisamos su solicitud y encontramos una estrategia para que su crédito, originalmente a *${plazoOriginal} meses*, pueda liquidarse mucho antes y reduzca significativamente el pago de intereses.%0A%0A`;
+    let mensaje = `🟢 *SU PROPUESTA PERSONALIZADA ESTÁ LISTA*%0A%0A`;
 
-    mensaje += `💵 *Monto del crédito:* $${parseFloat(monto).toLocaleString('en-US')}%0A`;
-    mensaje += `📉 *Pago mensual base:* $${parseFloat(mensualidadBase).toLocaleString('en-US')}%0A`;
-    mensaje += `📅 *Plazo original:* ${plazoOriginal} meses%0A`;
-    mensaje += `🚀 *Meta de liquidación:* ${plazoReal}%0A`;
-    mensaje += `⏳ *Tiempo que reduciría:* ${mesesAhorrados}%0A`;
-    mensaje += `💰 *Ahorro estimado en intereses:* ${interesAhorrado}%0A%0A`;
+        mensaje += `Hola. Le comparto el resumen de la propuesta que preparamos para usted.%0A%0A`;
 
-    mensaje += `✅ *¿Cómo se logra este ahorro?*%0A`;
-    mensaje += `Realizando aportaciones anticipadas a capital, las cuales se aplican sobre *saldos insolutos* y *no generan penalización*. Cada aportación reduce directamente el capital, por lo que disminuye el tiempo del crédito y los intereses a pagar.%0A%0A`;
+        mensaje += `💰 *Monto a recibir:* $${parseFloat(monto).toLocaleString('en-US')}%0A`;
+        mensaje += `📉 *Pago mensual:* $${parseFloat(mensualidadBase).toLocaleString('en-US')}%0A`;
+        mensaje += `📅 *Plazo original:* ${plazoOriginal} meses%0A`;
+        mensaje += `🏁 *Liquidación estimada:* ${plazoReal}%0A`;
+        mensaje += `⏳ *Meses que reduciría:* ${mesesAhorrados}%0A`;
+        mensaje += `💵 *Intereses que podría evitar pagar:* ${interesAhorrado}%0A%0A`;
 
-    mensaje += `Si desea conocer el plan completo y el monto sugerido de las aportaciones para alcanzar esta meta, con gusto se lo comparto.%0A%0A`;
+        mensaje += `✅ *Beneficios incluidos:*%0A`;
+        mensaje += `• Sin comisión por apertura.%0A`;
+        mensaje += `• Seguro de Vida y Asistencia Funeraria GNP sin costo adicional.%0A`;
+        mensaje += `• Aportaciones a capital sobre saldos insolutos y sin penalización.%0A%0A`;
 
-    mensaje += `Atendido por: *${ejecutivo}*%0A`;
-    mensaje += `📞 ${telefono}`;
+        mensaje += `Si desea conocer el monto de las aportaciones sugeridas para alcanzar esta meta, con gusto se lo explico.%0A%0A`;
+
+        mensaje += `Atendido por: *${ejecutivo}*%0A`;
+        mensaje += `📞 ${telefono}`;
+
+    mensaje += `%0A%0A📅 *Simulación generada:* ${fecha}`;
 
     window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
 }
