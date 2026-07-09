@@ -838,7 +838,8 @@
         document.getElementById('tabla-cuerpo-mobile').innerHTML = mobileHtml;
 
         document.getElementById('resPlazoAjustado').innerText = mesesConSaldoEfectivo + " Meses";
-        document.getElementById('resTiempoAhorrado').innerText = Math.max(0, plazoMaximo - mesesConSaldoEfectivo) + " Meses";
+        const plazoOriginalActual = parseInt(document.getElementById('plazoOriginal').value) || 48; 
+        document.getElementById('resTiempoAhorrado').innerText = Math.max(0, plazoOriginalActual - mesesConSaldoEfectivo) + " Meses";
         document.getElementById('resInteresesTotales').innerText = `$${totalInteresAcumulado.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
         document.getElementById('resIvaTotal').innerText = `$${totalIvaAcumulado.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
         document.getElementById('resMontoTotalPagar').innerText = `$${totalPagadoAcumulado.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
