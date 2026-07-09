@@ -966,33 +966,39 @@
         document.getElementById('ofertas-container').innerHTML = html;
         
     }
-    function enviarWhatsApp() {
-        const monto = document.getElementById('monto').value;
-        const plazoReal = document.getElementById('resPlazoAjustado').innerText;
-        const mesesAhorrados = document.getElementById('resTiempoAhorrado').innerText;
-        const interesAhorrado = document.getElementById('resInteresAhorrado').innerText;
-        const mensualidadBase = document.getElementById('mensualidadBase').value;
-        const ejecutivo = document.getElementById('ejecutivo').value;
-        const telefono = document.getElementById('telefono').value;
+   function enviarWhatsApp() {
+    const monto = document.getElementById('monto').value;
+    const plazoReal = document.getElementById('resPlazoAjustado').innerText;
+    const mesesAhorrados = document.getElementById('resTiempoAhorrado').innerText;
+    const interesAhorrado = document.getElementById('resInteresAhorrado').innerText;
+    const mensualidadBase = document.getElementById('mensualidadBase').value;
+    const ejecutivo = document.getElementById('ejecutivo').value;
+    const telefono = document.getElementById('telefono').value;
 
-        let planTxt = "Personalizado";
-        if (tarjetaSeleccionadaActiva === 'mes12') planTxt = "Estrategia 12 Meses";
-        if (tarjetaSeleccionadaActiva === 'mes18') planTxt = "Estrategia 18 Meses";
-        if (tarjetaSeleccionadaActiva === 'mes24') planTxt = "Estrategia 24 Meses";
+    // Si tu crédito siempre inicia a 60 meses
+    const plazoOriginal = 60;
 
-        let mensaje = `*CRÉDITO PERSONAL PENSIONADOS IMSS*%0A%0A`;
-        mensaje += `Hola, le comparto la propuesta del plan de liquidación anticipada diseñado para usted.%0A%0A`;
-        mensaje += `• *Monto Solicitado:* $${parseFloat(monto).toLocaleString('en-US')}%0A`;
-        mensaje += `• *Descuento Mensual Base:* $${parseFloat(mensualidadBase).toLocaleString('en-US')}%0A`;
-        mensaje += `• *Plan Aplicado:* ${planTxt}%0A`;
-        mensaje += `• *Plazo Reducido Real:* ${plazoReal}%0A`;
-        mensaje += `• *Tiempo Recortado:* ${mesesAhorrados}%0A`;
-        mensaje += `• *¡Interés Neto Ahorrado!:* ${interesAhorrado}%0A%0A`;
-        mensaje += `_Nota: Recuerde que sus aportaciones a capital son sobre saldos insolutos y sin penalización._%0A%0A`;
-        mensaje += `Atendido por su asesor: *${ejecutivo}* (Tel: ${telefono})`;
+    let mensaje = `🟢 *¡SU PROPUESTA DE AHORRO ESTÁ LISTA!*%0A%0A`;
 
-        window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
-    }
+    mensaje += `Revisamos su solicitud y encontramos una estrategia para que su crédito, originalmente a *${plazoOriginal} meses*, pueda liquidarse mucho antes y reduzca significativamente el pago de intereses.%0A%0A`;
+
+    mensaje += `💵 *Monto del crédito:* $${parseFloat(monto).toLocaleString('en-US')}%0A`;
+    mensaje += `📉 *Pago mensual base:* $${parseFloat(mensualidadBase).toLocaleString('en-US')}%0A`;
+    mensaje += `📅 *Plazo original:* ${plazoOriginal} meses%0A`;
+    mensaje += `🚀 *Meta de liquidación:* ${plazoReal}%0A`;
+    mensaje += `⏳ *Tiempo que reduciría:* ${mesesAhorrados}%0A`;
+    mensaje += `💰 *Ahorro estimado en intereses:* ${interesAhorrado}%0A%0A`;
+
+    mensaje += `✅ *¿Cómo se logra este ahorro?*%0A`;
+    mensaje += `Realizando aportaciones anticipadas a capital, las cuales se aplican sobre *saldos insolutos* y *no generan penalización*. Cada aportación reduce directamente el capital, por lo que disminuye el tiempo del crédito y los intereses a pagar.%0A%0A`;
+
+    mensaje += `Si desea conocer el plan completo y el monto sugerido de las aportaciones para alcanzar esta meta, con gusto se lo comparto.%0A%0A`;
+
+    mensaje += `Atendido por: *${ejecutivo}*%0A`;
+    mensaje += `📞 ${telefono}`;
+
+    window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
+}
 
     console.log(
         "%c¡Sistema Desarrollado por Yoan Garrido!\n%cAsesor Certificado Especialista\nContacto Ejecutivo: 663 127 8162\n© 2026 Todos los derechos de código e ingeniería matemática reservados.", 
